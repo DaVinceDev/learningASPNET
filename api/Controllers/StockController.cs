@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using api.DTOs.Stock;
+using api.Mappers;
 
 namespace api.Controllers
 {
@@ -20,7 +22,18 @@ namespace api.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var stocks = _context.Stocks.ToList();
+            var stocks = _context.Stocks.ToList()
+            .Select(s => StockMappers.ToStockDTO(new StockDTO
+            {
+                ID = s.ID,
+                Symbol = s.Symbol,
+                CompanyName = s.CompanyName,
+                Purchase = s.Purchase,
+                LastDiv = s.LastDiv,
+                Industry = s.Industry,
+                MarketCap = s.MarketCap
+
+            }));
 
             return Ok(stocks);
         }
@@ -35,7 +48,17 @@ namespace api.Controllers
                 return NotFound();
             }
 
-            return Ok(stock);
+           var converted = StockMappers.ToStockDTO(new StockDTO
+            {
+                ID = stock.ID,
+                Symbol = stock.Symbol,
+                CompanyName = stock.CompanyName,
+                Purchase = stock.Purchase,
+                LastDiv = stock.LastDiv,
+                Industry = stock.Industry,
+                MarketCap = stock.MarketCap
+            });
+            return Ok(converted);
         }
     }
 }
